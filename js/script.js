@@ -1,5 +1,5 @@
 const video = document.getElementById('video')
-const source = '/js/models'
+const source = 'js/models'
 
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri(source),
