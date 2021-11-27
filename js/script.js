@@ -41,14 +41,14 @@ function maxDetection(objExpressions) {
 }
 
 // Mostra as faces da quantidade N de pessoas que aparecer na camara
-function showFaceDetectionsAll(objArray = [], ctx) {
+function showFaceDetectionsAll(objArray, ctx) {
     for(let i = 0; i < objArray.length; i++) {
         showFaceDetections(objArray[i], ctx)
     }
 }
 
 // Para montar personalizado de acordo com a pessoa
-function showFaceDetections(obj = [], ctx) {
+function showFaceDetections(obj, ctx) {
     
     const canvas = ctx.getContext('2d')
     const type_faces = {
@@ -73,11 +73,23 @@ function showFaceDetections(obj = [], ctx) {
     
     console.log(positionRect)
     
+    // Mostrando a cara da pessoa
     canvas.font = "15px Arial"
     canvas.fillStyle = "red"
     canvas.fillRect( positionRect.x - 30, positionRect.y - 30, 150, 50);
     canvas.fillStyle = "white"
     canvas.fillText(type_faces[maxDetection(expressions)], positionRect.x, positionRect.y)  
+}
+
+// Mostrando a quantidade pessoais que ta em cena
+function showTotalPeople(objArray, ctx) {
+    const canvas = ctx.getContext('2d')
+
+    canvas.font = "15px Arial"
+    canvas.fillStyle = "blue"
+    canvas.fillRect(0, 0, 250, 50);
+    canvas.fillStyle = "white"
+    canvas.fillText(`Total de pessoa detectado: ${objArray.length}`, 10, 50 / 2)  
 }
 
 
@@ -89,14 +101,18 @@ video.addEventListener('play', (e) => {
     
     // document.querySelector('#face-detection').append(canvas)
     document.body.append(canvas)
-    
+
+
     const displaySize = { width: video.clientWidth, height: video.clientHeight }
     
-    // Configura a canvas para ficar na mesma dimensão do video
+
     faceapi.matchDimensions(canvas, displaySize)
     
     // Parte que detecta o rosto
     setInterval(async () => {
+        
+        // Configura a canvas para ficar na mesma dimensão do video
+
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
         
         if(detections.length > 0 ) console.log(detections) // Mostra um log no console com as possibilidade de detecção do rosto
@@ -110,7 +126,9 @@ video.addEventListener('play', (e) => {
         // Mostrando o status 
         showFaceDetectionsAll(detections, canvas)
 
-    }, 500)
+        showTotalPeople(detections, canvas)
+
+    }, 250)
 })
 
 
