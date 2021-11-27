@@ -1,4 +1,5 @@
 const video = document.getElementById('video')
+const loadingContent =  document.querySelector('#loading-content')
 const source = 'js/models'
 
 Promise.all([
@@ -109,9 +110,29 @@ video.addEventListener('play', (e) => {
 })
 
 
+let totLoadingVideo = 0
+let totAttempt = 0
+
 let interval = setInterval(function(){ 
-    document.querySelector('#loading-content').innerHTML += video.readyState + ' '
+
+   loadingContent.innerHTML += video.readyState + ' '
+
    if (video.readyState === 4) {
       clearInterval(interval);
    }
-}, 500);
+
+   // Verificar se deu erro no carregamento, na decima tentativa tentar abrir a camara novamente!
+   if (totLoadingVideo % 10 == 0 && totLoadingVideo > 0) {
+       startVideo()
+       totAttempt++
+   }
+
+   // verificando se na quarta tentiva houve uma falhar ao tentar abrir a camara
+   if (totAttempt == 4) {
+       loadingContent.innerHTML = 'Houver uma falhar ao tentar abrir a sua camâra'
+       clearInterval(interval)
+   }
+
+   totLoadingVideo++
+
+}, 1000);
