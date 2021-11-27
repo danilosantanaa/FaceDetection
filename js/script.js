@@ -16,6 +16,8 @@ function startVideo() {
     )
 }
 
+
+// Obtem qual foi a maior chave da expresão que foi detectado
 function maxDetection(objExpressions) {
     let key = ''
     let count = 0
@@ -32,12 +34,14 @@ function maxDetection(objExpressions) {
     return key
 }
 
+// Mostra as faces da quantidade N de pessoas que aparecer na camara
 function showFaceDetectionsAll(objArray = [], ctx) {
     for(let i = 0; i < objArray.length; i++) {
         showFaceDetections(objArray[i], ctx)
     }
 }
 
+// Para montar personalizado de acordo com a pessoa
 function showFaceDetections(obj = [], ctx) {
 
     const canvas = ctx.getContext('2d')
@@ -56,27 +60,28 @@ function showFaceDetections(obj = [], ctx) {
 
     expressions = obj.expressions
     
-    
     let positionRect = {
-        x: obj.alignedRect._box.x || 0,
-        y: obj.alignedRect._box.y || 0
+        x: obj.landmarks._shift.x,
+        y: obj.landmarks._shift.y
     }
 
     console.log(positionRect)
     
-    canvas.font = "20px Arial"
+    canvas.font = "15px Arial"
     canvas.fillStyle = "red"
-    canvas.fillText(type_faces[maxDetection(expressions)], positionRect.x + 100, positionRect.y)  
+    canvas.fillRect( positionRect.x - 30, positionRect.y - 30, 150, 50);
+    canvas.fillStyle = "white"
+    canvas.fillText(type_faces[maxDetection(expressions)], positionRect.x, positionRect.y)  
 }
 
 
 video.addEventListener('play', () => {
     const canvas = faceapi.createCanvasFromMedia(video)
 
-    document.querySelector('#face-detection').append(canvas)
-    // document.body.append(canvas)
+    // document.querySelector('#face-detection').append(canvas)
+    document.body.append(canvas)
 
-    const displaySize = { width: video.width, height: video.height}
+    const displaySize = { width: video.clientWidth, height: video.clientHeight }
 
     // Configura a canvas para ficar na mesma dimensão do video
     faceapi.matchDimensions(canvas, displaySize)
@@ -85,7 +90,7 @@ video.addEventListener('play', () => {
     setInterval(async () => {
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
 
-        //if(detections.length > 0 ) console.log(detections) // Mostra um log no console com as possibilidade de detecção do rosto
+        if(detections.length > 0 ) console.log(detections) // Mostra um log no console com as possibilidade de detecção do rosto
 
         const resizedDetections = faceapi.resizeResults(detections, displaySize)
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
@@ -97,4 +102,9 @@ video.addEventListener('play', () => {
         showFaceDetectionsAll(detections, canvas)
 
     }, 100)
+})
+
+
+video.addEventListener('load', () => {
+    console.log('Ainda está carregando....')
 })

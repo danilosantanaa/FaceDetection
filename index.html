@@ -11,18 +11,18 @@
         body {
             margin: 0;
             padding: 0;
-            width: 95vw;
+            width: 100vw;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            background-color: black;
         }
 
-
-        div#face-detection {
-            display: flex;
-            position: relative;
+        video {
+            width: 100vw;
+            height: 100vh;
         }
 
         canvas {
@@ -31,8 +31,6 @@
     </style>
 </head>
 <body>
-    <div id="face-detection">
-        <video id="video" width="720" height="540" autoplay muted></video>
-    </div>
+    <video id="video"  autoplay muted></video>
 </body>
 </html>
