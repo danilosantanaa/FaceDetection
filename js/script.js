@@ -2,6 +2,8 @@ const video = document.getElementById('video')
 const loadingContent =  document.querySelector('#loading-content')
 const source = 'js/models'
 
+let errorMsg = ''
+
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri(source),
     faceapi.nets.faceLandmark68Net.loadFromUri(source),
@@ -13,7 +15,9 @@ function startVideo() {
     navigator.getUserMedia(
         { video: {} },
         stream => video.srcObject = stream,
-        error => console.log(error)
+        error => {
+            errorMsg = error.message
+        }
     )
 
 }
@@ -79,7 +83,7 @@ function showFaceDetections(obj = [], ctx) {
 
 video.addEventListener('play', (e) => {
 
-    // document.querySelector('#loading-content').style.display = 'none'
+    loadingContent.style.display = 'none'
 
     const canvas = faceapi.createCanvasFromMedia(video)
     
@@ -112,12 +116,15 @@ video.addEventListener('play', (e) => {
 
 let totLoadingVideo = 0
 let totAttempt = 0
+const TOT_ATTEMPT = 4
+
+const warning = document.querySelector('#warning')
+const title = document.querySelector('#title')
+const loading = document.querySelector('#loading')
 
 let interval = setInterval(function(){ 
 
-   loadingContent.innerHTML += video.readyState + ' '
-
-   if (video.readyState === 4) {
+   if (video.readyState === TOT_ATTEMPT) {
       clearInterval(interval);
    }
 
@@ -125,14 +132,26 @@ let interval = setInterval(function(){
    if (totLoadingVideo % 10 == 0 && totLoadingVideo > 0) {
        startVideo()
        totAttempt++
+
+       document.querySelector('#tentativa').innerHTML = `Tentativa ${totAttempt} de ${TOT_ATTEMPT}`
    }
 
    // verificando se na quarta tentiva houve uma falhar ao tentar abrir a camara
-   if (totAttempt == 4) {
-       loadingContent.innerHTML = 'Houver uma falhar ao tentar abrir a sua camâra'
-       clearInterval(interval)
+   if (totAttempt == TOT_ATTEMPT || errorMsg === 'Permission denied') {
+       loading.style.backgroundImage="url(img/error.png)" // Alterar icone de erro
+       title.style.display = 'none' // Oculta o titulo
+
+       // Verificando se é erro de permissão 
+        if(errorMsg === 'Permission denied') {
+            warning.innerHTML = 'Por favor! Você precisa dar permissão para que o app acesse sua câmara'
+        } else {
+            warning.innerHTML = 'Houver uma falhar ao tentar abrir a sua camâra. Verifique se deu permissão necessária para abrir sua câmara!' // coloco o aviso de erro
+        }
+
+       loadingContent.style.color = 'red' // coloca cor vermelho
+       clearInterval(interval) // limpar o serInteval
    }
 
-   totLoadingVideo++
+   totLoadingVideo++ // Total de carregamento que o videoy
 
 }, 1000);
