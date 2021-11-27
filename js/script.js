@@ -78,7 +78,7 @@ function showFaceDetections(obj = [], ctx) {
 
 video.addEventListener('play', (e) => {
 
-    document.querySelector('#loading-content').style.display = 'none'
+    // document.querySelector('#loading-content').style.display = 'none'
 
     const canvas = faceapi.createCanvasFromMedia(video)
     
@@ -107,3 +107,11 @@ video.addEventListener('play', (e) => {
 
     }, 500)
 })
+
+
+let interval = setInterval(function(){ 
+    document.querySelector('#loading-content').innerHTML += video.readyState + ' '
+   if (video.readyState === 4) {
+      clearInterval(interval);
+   }
+}, 500);
