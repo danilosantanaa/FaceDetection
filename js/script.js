@@ -16,42 +16,57 @@ function startVideo() {
     )
 }
 
-/**
- * 
- * expressions: 
-    angry: 0.000005803345175081631
-    disgusted: 7.148163660986029e-8
-    fearful: 0.000023560833142255433
-    happy: 0.8961021900177002
-    neutral: 0.1027340367436409
-    sad: 0.0011258510639891028
-    surprised: 0.000008611932571511716
- */
+function maxDetection(objExpressions) {
+    let key = ''
+    let count = 0
+    for(expression in objExpressions) {
 
-function showFaceDetections(obj = []) {
-    const neutral = document.querySelector('#neutral')
+       if("asSortedArray" != expression) {
+        if ( count == 0 || objExpressions[key] < objExpressions[expression] ) {
+            key = expression
+        }   
+        count ++
+       }
+    }
 
-    let expressions = null
-    if (obj.length > 0) expressions = obj[0].expressions
+    return key
+}
 
-    const PERCENTAGE = 0.8
+function showFaceDetectionsAll(objArray = [], ctx) {
+    for(let i = 0; i < objArray.length; i++) {
+        showFaceDetections(objArray[i], ctx)
+    }
+}
 
-    const happy = document.querySelector("#happy")
-    const sad = document.querySelector("#sad")
-    const angry = document.querySelector('#angry')
-    const disgusted = document.querySelector('#disgusted')
-    const fearful = document.querySelector('#fearful')
+function showFaceDetections(obj = [], ctx) {
+
+    const canvas = ctx.getContext('2d')
+    const type_faces = {
+        happy: 'FELICIDADE ' + String.fromCodePoint(0x1F601),
+        sad:  'TRISTE' + String.fromCodePoint(0x1F614),
+        angry: 'RAIVA' + String.fromCodePoint(0x1F612),
+        disgusted:  'NOJO' + String.fromCodePoint(0x1F601),
+        fearful: 'MEDO' + String.fromCodePoint(0x1F631),
+        neutral: 'NEUTRO' + String.fromCodePoint(0x1F610),
+        surprised: 'SUPRESO(A)' + String.fromCodePoint(0x1F632)
+    }
+
+    
+    if (obj == null || obj == undefined) return;
+
+    expressions = obj.expressions
     
     
-    neutral.innerHTML = expressions != null && expressions.neutral >= PERCENTAGE ? "SIM" : "NÃO"
-    neutral.innerHTML = expressions == null ? "SIM" : neutral.innerHTML
+    let positionRect = {
+        x: obj.alignedRect._box.x || 0,
+        y: obj.alignedRect._box.y || 0
+    }
 
-    happy.innerHTML = expressions != null && expressions.happy >= PERCENTAGE ? "Foi dectetado felicidade" : ""
-    sad.innerHTML = expressions != null && expressions.sad >= PERCENTAGE ? "Foi detectado tristeza": ""
-    angry.innerHTML = expressions != null && expressions.angry >= PERCENTAGE ? "Foi detectado raiva" : ""
-    disgusted.innerHTML = expressions != null && expressions.disgusted >= PERCENTAGE ? "Foi detectado nojo" : ""
-    fearful.innerHTML = expressions != null && expressions.fearful >= PERCENTAGE ? "Foi detectado medo" : ""
-
+    console.log(positionRect)
+    
+    canvas.font = "20px Arial"
+    canvas.fillStyle = "red"
+    canvas.fillText(type_faces[maxDetection(expressions)], positionRect.x + 100, positionRect.y)  
 }
 
 
@@ -70,7 +85,7 @@ video.addEventListener('play', () => {
     setInterval(async () => {
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
 
-        console.log(detections) // Mostra um log no console com as possibilidade de detecção do rosto
+        //if(detections.length > 0 ) console.log(detections) // Mostra um log no console com as possibilidade de detecção do rosto
 
         const resizedDetections = faceapi.resizeResults(detections, displaySize)
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
@@ -79,7 +94,7 @@ video.addEventListener('play', () => {
         faceapi.draw.drawDetections(canvas, resizedDetections)
 
         // Mostrando o status 
-        showFaceDetections(detections)
+        showFaceDetectionsAll(detections, canvas)
 
     }, 100)
 })
