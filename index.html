@@ -54,11 +54,18 @@
         }
 
         #loading {
-            width: 250px;
+            width: 100%;
             height: 250px;
             background-image: url(img/loading3.gif);
             background-repeat: no-repeat;
             background-size: contain;
+            background-position: center;
+        }
+
+        @media (max-width: 600px) {
+            #loading-content {
+                width: 80%;
+            }
         }
     </style>
 </head>
