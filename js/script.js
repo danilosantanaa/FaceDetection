@@ -103,5 +103,5 @@ video.addEventListener('play', () => {
         // Mostrando o status 
         showFaceDetectionsAll(detections, canvas)
 
-    }, 100)
+    }, 250)
 })
