@@ -18,6 +18,7 @@
             align-items: center;
             flex-direction: column;
             background-color: black;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         video {
@@ -28,9 +29,35 @@
         canvas {
             position: absolute
         }
+
+        #loading-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: absolute;
+            background-color: white;
+            padding: 20px;
+            font-size: 1.5em;
+        }
+
+        #loading {
+            width: 250px;
+            height: 250px;
+            background-image: url(img/loading.gif);
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
     </style>
 </head>
 <body>
+    <div id="loading-content">
+        <div id="loading"></div>
+        <div>
+            Carregando... Aguarde!
+        </div>
+    </div>
+
     <video id="video"  autoplay muted></video>
 </body>
 </html>

@@ -14,6 +14,8 @@ function startVideo() {
         stream => video.srcObject = stream,
         error => console.log(error)
     )
+
+    document.querySelector('#loading-content').style.display = 'none'
 }
 
 
@@ -102,9 +104,4 @@ video.addEventListener('play', () => {
         showFaceDetectionsAll(detections, canvas)
 
     }, 100)
-})
-
-
-video.addEventListener('load', () => {
-    console.log('Ainda está carregando....')
 })
